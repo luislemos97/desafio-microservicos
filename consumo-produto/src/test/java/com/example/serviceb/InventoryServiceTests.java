@@ -1,38 +1,88 @@
 package com.example.serviceb;
 
+import com.example.consumo.produto.dto.InventoryDTO;
+import com.example.consumo.produto.dto.ProductDTO;
+import com.example.consumo.produto.service.InventoryServiceValidation;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
-import com.example.consumo.produto.dto.ProductDTO;
-import com.example.consumo.produto.service.InventoryService;
 
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class InventoryServiceTests {
+class InventoryServiceTests {
 
     @Mock
     private RestTemplate restTemplate;
 
-    @InjectMocks
-    private InventoryService inventoryService;
+    private InventoryServiceValidation inventoryServiceValidation;
 
-    public InventoryServiceTests() {
+    @BeforeEach
+    void setup() {
         MockitoAnnotations.openMocks(this);
-        inventoryService = new InventoryService("http://localhost:8081");
-        inventoryService = spy(inventoryService);
+        inventoryServiceValidation = new InventoryServiceValidation("http://fake-url:8081", restTemplate);
     }
 
     @Test
-    public void testFallback() throws Exception {
-        CompletableFuture<ProductDTO> future = inventoryService.fallbackProduct(1L, new RuntimeException());
-        ProductDTO product = future.get();
-        assertEquals("Unknown", product.getNome());
-        assertEquals(0, product.getQuantidade());
+    void whenQuantityBelowLimit_thenInventoryDTOHasEstoqueBaixoTrue() throws Exception {
+        Long id = 1L;
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(id);
+        productDTO.setNome("Produto X");
+        productDTO.setQuantidade(5);
+
+        when(restTemplate.getForEntity("http://fake-url:8081/api/products/1", ProductDTO.class))
+                .thenReturn(ResponseEntity.ok(productDTO));
+
+        CompletableFuture<InventoryDTO> future = inventoryServiceValidation.checkStockStatus(id);
+        InventoryDTO status = future.get();
+
+        assertTrue(status.isEstoqueBaixo());
+        assertEquals("Produto X", status.getNome());
+        assertEquals(5, status.getQuantidade());
+        assertTrue(status.getMensagem().contains("Quantidade em estoque baixa"));
+    }
+
+    @Test
+    void whenQuantityAboveLimit_thenInventoryDTOHasEstoqueBaixoFalse() throws Exception {
+        Long id = 2L;
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(id);
+        productDTO.setNome("Produto Y");
+        productDTO.setQuantidade(15);
+
+        when(restTemplate.getForEntity("http://fake-url:8081/api/products/2", ProductDTO.class))
+                .thenReturn(ResponseEntity.ok(productDTO));
+
+        CompletableFuture<InventoryDTO> future = inventoryServiceValidation.checkStockStatus(id);
+        InventoryDTO status = future.get();
+
+        assertFalse(status.isEstoqueBaixo());
+        assertEquals("Produto Y", status.getNome());
+        assertEquals(15, status.getQuantidade());
+        assertTrue(status.getMensagem().contains("Quantidade em estoque suficiente"));
+    }
+
+    @Test
+    void whenProductNotFound_thenInventoryDTOHasErroProdutoNaoEncontrado() throws Exception {
+        Long id = 3L;
+
+        when(restTemplate.getForEntity("http://fake-url:8081/api/products/3", ProductDTO.class))
+                .thenReturn(ResponseEntity.ok(null));
+
+        CompletableFuture<InventoryDTO> future = inventoryServiceValidation.checkStockStatus(id);
+        InventoryDTO status = future.get();
+
+        assertTrue(status.isEstoqueBaixo());
+        assertEquals(id, status.getId());
+        assertNull(status.getNome());
+        assertEquals(0, status.getQuantidade());
+        assertEquals("Produto não encontrado", status.getMensagem());
     }
 }

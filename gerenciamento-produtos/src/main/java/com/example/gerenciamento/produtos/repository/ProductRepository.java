@@ -1,6 +1,6 @@
-package com.example.servicea.repository;
+package com.example.gerenciamento.produtos.repository;
 
-import com.example.servicea.model.Product;
+import com.example.gerenciamento.produtos.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

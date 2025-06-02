@@ -1,11 +1,10 @@
 package com.example.consumo.produto.controller;
 
+import com.example.consumo.produto.dto.InventoryDTO;
+import com.example.consumo.produto.service.InventoryServiceValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.example.consumo.produto.dto.ProductDTO;
-import com.example.consumo.produto.service.InventoryService;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -15,18 +14,12 @@ import java.util.concurrent.CompletableFuture;
 public class InventoryController {
 
     @Autowired
-    private InventoryService inventoryService;
+    private InventoryServiceValidation inventoryServiceValidation;
 
     @GetMapping("/{id}")
-    public CompletableFuture<ResponseEntity<String>> checkStock(@PathVariable Long id) {
-        return inventoryService.getProductById(id).thenApply(product -> {
-            if (product.getQuantidade() < 10) {
-                return ResponseEntity.ok("Produto: " + product.getNome() +
-                        " | Quantidade em estoque baixa: " + product.getQuantidade());
-            } else {
-                return ResponseEntity.ok("Produto: " + product.getNome() +
-                        " | Quantidade em estoque suficiente: " + product.getQuantidade());
-            }
-        });
+    public CompletableFuture<ResponseEntity<InventoryDTO>> checkStock(@PathVariable Long id) {
+        return inventoryServiceValidation
+                .checkStockStatus(id)
+                .thenApply(ResponseEntity::ok);
     }
 }
