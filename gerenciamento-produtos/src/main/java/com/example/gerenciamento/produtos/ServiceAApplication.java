@@ -1,4 +1,4 @@
-package com.example.servicea;
+package com.example.gerenciamento.produtos;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

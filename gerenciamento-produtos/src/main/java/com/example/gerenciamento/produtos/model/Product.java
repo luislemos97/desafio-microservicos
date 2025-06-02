@@ -1,4 +1,4 @@
-package com.example.servicea.model;
+package com.example.gerenciamento.produtos.model;
 
 import jakarta.persistence.*;
 

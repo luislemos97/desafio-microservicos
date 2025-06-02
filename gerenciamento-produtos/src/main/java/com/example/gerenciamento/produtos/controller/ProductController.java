@@ -1,7 +1,7 @@
-package com.example.servicea.controller;
+package com.example.gerenciamento.produtos.controller;
 
-import com.example.servicea.model.Product;
-import com.example.servicea.service.ProductService;
+import com.example.gerenciamento.produtos.model.Product;
+import com.example.gerenciamento.produtos.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

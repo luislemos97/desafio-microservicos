@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: mysql:8
+    image: mysql:8.0
     container_name: mysql-db
     environment:
       MYSQL_DATABASE: produtos_db
@@ -16,6 +16,8 @@ services:
       retries: 5
 
   gerenciamento-produtos:
+    container_name: produtos
+    hostname: produtos
     build: ./gerenciamento-produtos
     ports:
       - "8081:8081"
@@ -26,13 +28,14 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/produtos_db
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
-    volumes:
-      - ./servico-a/src/main/resources:/app/resources
+
 
   consumo-produto:
     build: ./consumo-produto
     ports:
       - "8082:8082"
+    environment:
+      - SERVICE_A_URL=http://produtos:8081
     depends_on:
       - gerenciamento-produtos
 
