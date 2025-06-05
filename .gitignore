@@ -1,0 +1,9 @@
+# Ignorar todas as pastas target geradas pelo Maven
+**/target/
+
+# Ignorar diretórios de build do Angular
+frontend/.angular/
+frontend/node_modules/ 
+
+# Ignorar configurações locais do VSCode
+.vscode/
