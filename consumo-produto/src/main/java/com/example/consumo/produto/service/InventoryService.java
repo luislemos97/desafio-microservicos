@@ -4,7 +4,6 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,7 +22,6 @@ public class InventoryService {
         this.serviceAUrl = serviceAUrl;
     }
 
-    @Cacheable("products")
     @CircuitBreaker(name = "gerenciamentoProdutos", fallbackMethod = "fallbackProduct")
     @Retry(name = "gerenciamentoProdutos")
     @TimeLimiter(name = "gerenciamentoProdutos")

@@ -7,7 +7,6 @@ public class ProductDTO {
     private Double preco;
     private Integer quantidade;
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
