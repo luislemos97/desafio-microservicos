@@ -6,7 +6,6 @@ import com.example.gerenciamento.produtos.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
@@ -39,8 +38,10 @@ public class ProductServiceTests {
         when(productRepository.save(valid)).thenReturn(valid);
 
         Product saved = productService.save(valid);
+
         assertEquals("Produto Válido", saved.getNome());
-        verify(productRepository, times(1)).save(valid);
+        
+        verify(productRepository).save(valid);
     }
 
     @Test

@@ -1,18 +1,21 @@
-package com.example.gerenciamento.produtos.model;
+package com.example.gerenciamento.produtos.controller;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "products")
-public class Product {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProductResponse {
     private Long id;
     private String nome;
     private String descricao;
     private Double preco;
     private Integer quantidade;
+
+    public ProductResponse() {}
+
+    public ProductResponse(Long id, String nome, String descricao, Double preco, Integer quantidade) {
+        this.id = id;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.preco = preco;
+        this.quantidade = quantidade;
+    }
 
     public Long getId() {
         return id;
